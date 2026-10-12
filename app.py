@@ -21,6 +21,29 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import infini
 import fallback
 
+
+def _load_env_file():
+    """Minimal .env loader (stdlib only) so the deploy sandbox can supply INFINI_KEY
+    without relying on injected environment variables. Never printed/leaked."""
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(p):
+        return
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k, v = k.strip(), v.strip().strip('"').strip("'")
+                if k and k not in os.environ:
+                    os.environ[k] = v
+    except Exception:  # noqa: BLE001
+        pass
+
+
+_load_env_file()
+
 HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", "8000"))
 CLIENT = infini.InfiniClient()
