@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClauseGuard AI · 合同风险卫士（InfiniSynapse 驱动）</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121b2e; --panel2:#16213a; --line:#22304d;
+    --txt:#e6edf7; --muted:#90a0bd; --brand:#3ad0c4; --brand2:#4f8cff;
+    --high:#ff5d6c; --med:#ffb454; --low:#5dd39e; --accent:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,#1b2b4d 0%,var(--bg) 55%);color:var(--txt);min-height:100vh}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center;font-weight:800;font-size:22px;color:#04121f;box-shadow:0 6px 20px rgba(58,208,196,.35)}
+  h1{font-size:24px;margin:0;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;background:var(--panel2);
+    border:1px solid var(--line);color:var(--brand);margin-left:8px}
+  .grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:22px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
+  textarea{width:100%;min-height:200px;resize:vertical;background:#0d1626;color:var(--txt);
+    border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;line-height:1.6;outline:none}
+  textarea:focus{border-color:var(--brand)}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}
+  .modes{display:flex;gap:8px}
+  .modes button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+    padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
+  .modes button.active{color:#04121f;background:linear-gradient(135deg,var(--brand),var(--brand2));border-color:transparent;font-weight:700}
+  .go{margin-left:auto;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#04121f;
+    border:none;padding:11px 26px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;
+    box-shadow:0 8px 22px rgba(58,208,196,.35)}
+  .go:disabled{opacity:.55;cursor:default}
+  .banner{padding:10px 14px;border-radius:10px;font-size:13px;margin-top:14px;display:none}
+  .banner.warn{display:block;background:#2a2410;border:1px solid #6b561a;color:#ffd98a}
+  .banner.err{display:block;background:#2a1416;border:1px solid #6b1f24;color:#ffb3b9}
+  .out{margin-top:18px}
+  .stream{white-space:pre-wrap;line-height:1.7;font-size:14px;background:#0d1626;border:1px solid var(--line);
+    border-radius:12px;padding:16px;min-height:60px;max-height:480px;overflow:auto}
+  .gauge{display:flex;align-items:center;gap:18px;margin-bottom:16px}
+  .ring{--p:0;width:96px;height:96px;border-radius:50%;
+    background:conic-gradient(var(--c,var(--brand)) calc(var(--p)*1%),#1b2740 0);
+    display:grid;place-items:center;flex:0 0 auto}
+  .ring span{width:74px;height:74px;border-radius:50%;background:#0d1626;display:grid;place-items:center;
+    font-size:22px;font-weight:800;color:var(--txt)}
+  .band{font-size:13px;color:var(--muted)}
+  .band b{color:var(--txt);font-size:15px}
+  .finding{border:1px solid var(--line);border-left:4px solid var(--sev,#888);background:#0d1626;
+    border-radius:10px;padding:13px 15px;margin-bottom:12px}
+  .finding h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:9px}
+  .badge{font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;color:#04121f}
+  .b-HIGH{background:var(--high)} .b-MEDIUM{background:var(--med)} .b-LOW{background:var(--low)}
+  .finding p{margin:6px 0;font-size:13px;color:var(--muted);line-height:1.6}
+  .finding .sug{color:var(--brand)}
+  .findings-title{font-size:14px;color:var(--muted);margin:6px 0 12px}
+  footer{color:var(--muted);font-size:12px;margin-top:34px;text-align:center;line-height:1.7}
+  code{background:#0d1626;border:1px solid var(--line);padding:1px 6px;border-radius:6px;color:var(--brand)}
+  a{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">C</div>
+    <div>
+      <h1>ClauseGuard AI <span class="pill">Powered by InfiniSynapse</span></h1>
+      <div class="sub">把合同粘贴进来，AI 智能体帮你揪出高风险条款、用大白话解释并给修改建议。</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <label>合同文本（支持中文 / 英文；越长越能发现问题）</label>
+      <textarea id="contract" placeholder="在此粘贴合同正文，例如：&#10;本协议自签署之日起生效，期满后将自动续约。甲方有权随时单方面修改本条款且不另行通知……"></textarea>
+      <div class="row">
+        <div class="modes" id="modes">
+          <button data-mode="auto" class="active">自动（优先 InfiniSynapse）</button>
+          <button data-mode="offline">离线演示</button>
+        </div>
+        <button class="go" id="go">开始分析</button>
+      </div>
+      <div class="banner warn" id="banner"></div>
+    </div>
+
+    <div class="card out" id="out" style="display:none">
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <footer>
+    ClauseGuard AI · 基于 InfiniSynapse 数据智能体构建的合规 SaaS 演示 · 仅供风险自查，非法律意见<br/>
+    仓库：<a href="https://github.com/Zhiyilang/clauseguard-ai" target="_blank">github.com/Zhiyilang/clauseguard-ai</a>
+  </footer>
+</div>
+
+<script>
+let MODE="auto", timer=null;
+document.querySelectorAll('#modes button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#modes button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');MODE=b.dataset.mode;};
+});
+const $=(id)=>document.getElementById(id);
+function showBanner(msg,cls){const b=$('banner');b.className='banner '+cls;b.textContent=msg;b.style.display='block';}
+
+function md(text){
+  if(!text)return'';
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lines=esc(text).split(/\n/);let html='',inUl=false;
+  const closeUl=()=>{if(inUl){html+='</ul>';inUl=false;}};
+  for(let ln of lines){
+    if(/^\s*[-*]\s+/.test(ln)){if(!inUl){html+='<ul>';inUl=true;}
+      html+='<li>'+ln.replace(/^\s*[-*]\s+/,'')+'</li>';continue;}
+    closeUl();
+    if(/^###\s+/.test(ln))html+='<h4>'+ln.replace(/^###\s+/,'')+'</h4>';
+    else if(/^##\s+/.test(ln))html+='<h3>'+ln.replace(/^##\s+/,'')+'</h3>';
+    else if(/^#\s+/.test(ln))html+='<h2>'+ln.replace(/^#\s+/,'')+'</h2>';
+    else if(ln.trim()==='')html+='<br/>';
+    else html+='<p>'+ln.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</p>';
+  }
+  closeUl();return html;
+}
+
+function renderOffline(r){
+  const c={HIGH:'var(--high)',MEDIUM:'var(--med)',LOW:'var(--low)'}[r.band]||'var(--brand)';
+  let h='<div class="gauge"><div class="ring" style="--p:'+r.score+';--c:'+c+'"><span>'+r.score+'</span></div>'+
+    '<div class="band">风险评分 <b>'+r.band+'</b><br/>共发现 '+r.findings.length+' 项风险条款</div></div>';
+  if(r.note)h+='<div class="findings-title">'+r.note+'</div>';
+  if(!r.findings.length)h+='<p class="band">未命中已知高风险模板，建议仍由专业人士复核。</p>';
+  for(const f of r.findings){
+    h+='<div class="finding" style="--sev:'+({HIGH:'var(--high)',MEDIUM:'var(--med)',LOW:'var(--low)'}[f.severity])+'">'+
+      '<h4>'+f.label+'<span class="badge b-'+f.severity+'">'+f.severity+'</span></h4>'+
+      '<p>'+f.explanation+'</p>'+
+      '<p class="sug">建议：'+f.suggestion+'</p></div>';
+  }
+  return h;
+}
+
+async function analyze(){
+  const text=$('contract').value.trim();
+  if(!text){showBanner('请先粘贴合同文本。','warn');return;}
+  const go=$('go');go.disabled=true;go.textContent='分析中…';
+  $('out').style.display='block';$('result').innerHTML='';$('banner').style.display='none';
+  try{
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text,mode:MODE})});
+    const j=await res.json();
+    if(!j.ok){showBanner('分析失败：'+(j.error||'未知错误'),'err');go.disabled=false;go.textContent='重新分析';return;}
+    if(j.mode==='offline'){
+      if(j.offline_reason)showBanner('InfiniSynapse 暂不可用（'+(j.offline_reason||'')+'），已切换本地离线规则扫描（演示）。激活账号后将自动走 InfiniSynapse 智能体。','warn');
+      $('result').innerHTML=renderOffline(j.result);
+      go.disabled=false;go.textContent='重新分析';
+    }else{
+      showBanner('已提交 InfiniSynapse 智能体，正在分析（实时流式输出）…','warn');
+      poll(j.connId,go);
+    }
+  }catch(e){showBanner('请求出错：'+e,'err');go.disabled=false;go.textContent='重新分析';}
+}
+
+function poll(connId,go){
+  if(timer)clearInterval(timer);
+  const box=document.createElement('div');box.className='stream';$('result').appendChild(box);
+  timer=setInterval(async()=>{
+    try{
+      const r=await fetch('/api/status/'+connId);const s=await r.json();
+      box.textContent=s.partial||s.final||'（等待智能体响应…）';
+      box.scrollTop=box.scrollHeight;
+      if(s.done){
+        clearInterval(timer);
+        $('banner').style.display='none';
+        if(s.final)box.innerHTML=md(s.final);
+        else if(s.error)showBanner('分析结束但有错误：'+s.error,'err');
+        go.disabled=false;go.textContent='重新分析';
+      }
+    }catch(e){}
+  },2000);
+}
+
+$('go').onclick=analyze;
+</script>
+</body>
+</html>
