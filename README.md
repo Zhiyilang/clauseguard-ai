@@ -1,72 +1,63 @@
-# ClauseGuard AI · 合同风险卫士（InfiniSynapse 驱动）
+# ClauseGuard AI · Contract Risk Guardian (powered by InfiniSynapse)
 
-一个**构建在 InfiniSynapse 数据智能体之上的**合同风险分析 Web 应用。用户粘贴合同文本，
-后端通过 InfiniSynapse Server API 发起分析任务（SSE + `newTask`），由智能体识别高风险条款、
-用大白话解释并给出修改建议；前端实时展示流式结果。
+An autonomous **contract-risk agent**: paste a contract (English or Chinese), and the agent flags high-risk clauses, explains each risk in plain language, and gives a concrete fix — with a quantified 0–100 risk score.
 
-> 参赛作品 · 演示用途 · 非法律意见。
+> Demo · not legal advice.
 
-## 架构（符合 InfiniSynapse Vibe Coding 官方规范）
+**Now bilingual (EN / 中文)** — the whole interface and every finding switches language with one click. Bilingual parity is assertion-tested: the same contract scores identically in both languages.
+
+## Contest entries
+| Championship | Category | Status |
+|---|---|---|
+| **Dubai Create AI Agents Championship** (Dubai Chamber of Digital Economy, prize > AED 2.5M) | **Best Societal AI Agent** | entry pack ready — see `DUBAI_SUBMISSION.md` (checklist), `DUBAI_PITCH.md` (deck outline), `DUBAI_DEMO_SCRIPT.md` (3-min video script) |
+| InfiniSynapse Vibe Coding Hackathon 2026 | Open Industry | see `SUBMISSION.md` |
+
+## Architecture
 
 ```
-浏览器 -> 本应用后端 (app.py) -> InfiniSynapse Adapter (infini.py) -> InfiniSynapse Server API
-                                  -> 本地离线兜底引擎 (fallback.py)
+Browser -> app backend -> InfiniSynapse Server API (SSE + newTask)   [primary]
+                       -> offline bilingual rule engine              [resilience]
 ```
 
-- **API Key 仅存于服务端**，前端永不直接调用 InfiniSynapse（官方硬性要求）。
-- 先连 SSE 事件流，再发 `newTask`（顺序不可颠倒）。
-- 零第三方依赖：**纯 Python 标准库**（`urllib` + `http.server`），任何环境可直接运行。
+- **API key stays server-side**; the browser never calls the LLM provider directly.
+- **Zero third-party dependencies** — pure Python standard library (`urllib` + `http.server`), runs anywhere, fully auditable.
+- **Always runnable**: if the LLM API is unavailable, the local rule engine takes over seamlessly.
 
-## 运行
+## Run
 
 ```bash
-# 设置你的 InfiniSynapse API Key（海外 .com 账号）
-export INFINI_KEY="sk-xxxx"
+export INFINI_KEY="sk-xxxx"   # optional; without it the offline engine runs
 python app.py
-# 打开 http://localhost:8000
+# open http://localhost:8000
 ```
 
-不设置 `INFINI_KEY` 也能跑：应用会自动切换到**离线规则扫描兜底**，保证始终可演示。
+## Agent integration (InfiniSynapse Server API)
 
-## 与 InfiniSynapse 的集成点（参赛准入要求）
+1. **Launch analysis** — `POST /api/ai/message` (type=newTask), subscribing to SSE on `/api/ai/events`;
+2. **Manage context/data sources** — `GET /api/ai_database/list`, `/api/ai_rag_sdk`;
+3. **Pull results** — `GET /api/ai_task/getUiMessageById`, `/api/ai_task/getTaskWorkspace`.
 
-按比赛要求，本应用**通过 Server API 编程式地**：
+Details in `infini.py`.
 
-1. **发起分析任务** — `POST /api/ai/message`（type=newTask），并以 SSE 订阅 `/api/ai/events` 接收实时结果；
-2. **管理上下文/数据源** — 通过 `GET /api/ai_database/list`、`/api/ai_rag_sdk` 查询并启用数据库/RAG 知识库；
-3. **拉取结果** — `GET /api/ai_task/getUiMessageById`、`/api/ai_task/getTaskWorkspace` 获取结构化分析与产物。
+## Files
 
-详见 `infini.py`。
-
-## 文件结构
-
-| 文件 | 作用 |
+| File | Role |
 |---|---|
-| `app.py` | 零依赖 HTTP 服务 + 路由 + 前端托管 |
-| `infini.py` | InfiniSynapse Server API Adapter（SSE、任务、结果、重试、代理兼容） |
-| `fallback.py` | 离线规则兜底引擎（API 不可用时保证可运行） |
-| `index.html` | 单页前端（粘贴合同 → 实时分析 → 风险报告） |
+| `app.py` | zero-dependency HTTP server, routing, frontend hosting |
+| `infini.py` | InfiniSynapse Server API adapter (SSE, tasks, results, retries) |
+| `fallback.py` | offline bilingual rule engine (10 clause families, weighted score capped at 100) |
+| `index.html` | single-page frontend with EN/中文 toggle |
+| `eval.py` | **36 assertions, all passing** — detection, capping, injection safety, bilingual parity, degradation |
+| `DUBAI_*.md` | Dubai championship entry pack (checklist / pitch / demo script) |
 
-## 参赛信息（Submission）
+## Quality
 
-- **赛事**：InfiniSynapse Vibe Coding Hackathon Online 2026（全球场，2026-10-10 ~ 2026-10-31 PDT）
-- **赛道**：**Open Industry（开放行业）** —— 帮小微企业审合同风险的真实决策闭环，
-  是其余五条赛道（教育 / 零售补货 / 爆品分析 / SMB 运营 / 增长）未覆盖的运营场景。
-- **App 名称**：ClauseGuard AI — 合同风险卫士
-- **真实数据闭环（评委看重的"data path"）**：
-  用户输入合同文本 → 后端经 InfiniSynapse 智能体做条款风险判定（或离线规则引擎兜底）
-  → 输出结构化风险清单（条款/严重度/大白话解释/修改建议/风险评分）→ 给出"下一步该改哪条"的行动建议。
-- **集成说明**：后端经 InfiniSynapse Server API 编程式发起分析任务（`newTask`）并订阅 SSE 拉取产物；
-  Key 留存服务端，前端只与本应用后端通信（符合官方"Key 不下发前端"硬性要求）。
-- **仓库**：https://github.com/Zhiyilang/clauseguard-ai
+```bash
+python eval.py   # 36 passed / 0 failed — no network needed
+```
 
-### 评分映射（官方 rubric：场景价值 40% / 技术完整度 35% / 创新 25%）
+CI runs the suite on Python 3.10 / 3.11 / 3.12. MIT licensed.
 
-| 评分维度 | 本应用的对应设计 |
-|---|---|
-| 场景价值 40% | 小微企业签合同前缺乏法务支持，合同风险卫士直接给出"该改哪条"的可执行建议，痛点真实、受众广。 |
-| 技术完整度 35% | 零依赖标准库实现；真实接入 InfiniSynapse Server API（SSE+任务+结果）；带离线兜底保证 7×24 可运行；前端实时流式展示。 |
-| 创新 25% | 把"通用聊天/CSV"升级为**领域化合同风险工作流**：规则引擎 + 智能体双引擎、可解释条款库、风险评分量化。 |
-
-> 注：InfiniSynapse 免费层在高峰可能返回 `500 服务繁忙`，本应用已对此做优雅降级（自动切离线引擎），
-> 保证评委随时打开都能跑出完整结果；服务端空闲时自动恢复真·智能体分析。
+## Links
+- Repository: https://github.com/Zhiyilang/clauseguard-ai
+- 中文说明：[README.zh.md](README.zh.md)
