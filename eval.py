@@ -71,6 +71,35 @@ rcap = fallback.scan(CAP)
 check("fallback.score-capped-100", rcap["score"] == 100 and rcap["band"] == "HIGH", str(rcap))
 
 # --------------------------------------------------------------------------
+# 1b. English mode — Dubai Create AI Agents entry is English-only
+# --------------------------------------------------------------------------
+EN_HI = ("This agreement shall be automatically renewed upon expiry. "
+         "Party A may unilaterally modify the terms without notice. "
+         "The signer provides a personal guarantee with personal assets and "
+         "shall indemnify Party B against all losses.")
+ren = fallback.scan(EN_HI, "en")
+en_labels = [f["label"] for f in ren["findings"]]
+check("fallback.en-detects-auto-renewal", "Auto-renewal" in en_labels, str(en_labels))
+check("fallback.en-detects-unilateral", "Unilateral change of terms" in en_labels)
+check("fallback.en-detects-personal-guarantee", "Personal guarantee" in en_labels)
+check("fallback.en-same-score-as-zh", ren["score"] == r["score"] and ren["band"] == r["band"],
+      f"en={ren['score']}/{ren['band']} zh={r['score']}/{r['band']}")
+check("fallback.en-findings-fully-english",
+      all(f["label"].isascii() and f["explanation"].isascii() and f["suggestion"].isascii()
+          for f in ren["findings"]), str(ren))
+check("fallback.en-note-english", ren["note"].isascii() and "offline" in ren["note"])
+check("fallback.en-lang-field", ren["lang"] == "en")
+rzh = fallback.scan(HI, "zh")
+check("fallback.zh-default-unchanged", rzh["score"] == r["score"] and rzh["lang"] == "zh")
+check("fallback.en-cap-also-100", fallback.scan(
+    "auto-renew, unilateral change without notice, broad indemnity for all losses, personal guarantee", "en"
+)["score"] == 100)
+check("fallback.en-clean-zero", len(fallback.scan(
+    "The parties cooperate on equal terms and share revenue fairly.", "en")["findings"]) == 0)
+check("fallback.bad-lang-falls-back-zh",
+      fallback.scan(HI, "fr")["lang"] == "zh")
+
+# --------------------------------------------------------------------------
 # 2. Injection safety — malicious contract text must not break the engine
 # --------------------------------------------------------------------------
 EVIL = "<script>alert(1)</script> 自动续约 个人担保"
