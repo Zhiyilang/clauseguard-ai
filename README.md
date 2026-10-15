@@ -31,6 +31,22 @@ python app.py
 # open http://localhost:8000
 ```
 
+## Try it in 30 seconds (no key needed)
+
+1. `python app.py` and open http://localhost:8000
+2. Copy the contents of [`examples/sample_contract.txt`](examples/sample_contract.txt)
+   (a realistic freelance agreement with auto-renewal, indemnity and
+   non-refundable clauses) and paste it into the textarea
+3. Press **Analyze** — every finding quotes the clause, explains the risk in
+   plain language, and gives a concrete fix. The same contract in English and
+   Chinese returns the same 0–100 risk score (assertion-tested in `eval.py`).
+
+Command-line equivalent (offline engine, no server):
+
+```bash
+python -c "import fallback, json; print(json.dumps(fallback.scan(open('examples/sample_contract.txt').read(), 'en'), indent=2, ensure_ascii=False))"
+```
+
 ## Agent integration (InfiniSynapse Server API)
 
 1. **Launch analysis** — `POST /api/ai/message` (type=newTask), subscribing to SSE on `/api/ai/events`;
