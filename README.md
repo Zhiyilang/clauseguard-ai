@@ -41,10 +41,10 @@ python app.py
    plain language, and gives a concrete fix. The same contract in English and
    Chinese returns the same 0–100 risk score (assertion-tested in `eval.py`).
 
-Command-line equivalent (offline engine, no server):
+Command-line equivalent (offline engine, no server, no key):
 
 ```bash
-python -c "import fallback, json; print(json.dumps(fallback.scan(open('examples/sample_contract.txt').read(), 'en'), indent=2, ensure_ascii=False))"
+python demo.py    # scans examples/sample_contract.txt in EN + ZH, asserts parity
 ```
 
 ## Agent integration (InfiniSynapse Server API)
