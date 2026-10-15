@@ -1,4 +1,10 @@
 # ClauseGuard AI — Demo Video Script (Dubai entry)
+
+> 🎬 **Base footage already produced**: `clauseguard_demo.mp4` (20.1s, real
+> terminal run of `python demo.py` — bilingual scan of the sample contract,
+> then the 36-assertion suite). Use it as the product-proof segment inside the
+> 3-minute recording below, or as a fallback submission video.
+
 **Target length: 3:00** · Language: English (championship requires English entries) · Format: screen recording + voiceover
 
 ---
