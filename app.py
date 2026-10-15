@@ -110,22 +110,34 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, json.dumps({"ok": False, "error": "合同文本为空"}))
             return
 
+        lang = payload.get("lang", "zh")
+        if lang not in ("zh", "en"):
+            lang = "zh"
         mode = payload.get("mode", "auto")  # auto | infinisynapse | offline
 
         # Path A: explicit offline demo
         if mode == "offline":
-            result = fallback.scan(text)
+            result = fallback.scan(text, lang)
             self._send(200, json.dumps({"ok": True, "mode": "offline", "result": result},
                                        ensure_ascii=False))
             return
 
         # Path B: InfiniSynapse (primary)
-        prompt = (
-            "你是一名严谨的合同审查律师。请审阅下面这份合同文本，"
-            "识别高风险条款，按严重程度（HIGH/MEDIUM/LOW）列出每一条，"
-            "用大白话解释风险点，并给出修改建议。最后给出一个 0-100 的风险评分和总体结论。"
-            "请使用 Markdown 结构清晰输出。\n\n===== 合同正文 =====\n" + text
-        )
+        if lang == "en":
+            prompt = (
+                "You are a meticulous contract-review lawyer. Review the contract "
+                "text below, list every high-risk clause by severity (HIGH/MEDIUM/LOW), "
+                "explain each risk in plain language, and give a concrete fix. End with "
+                "an overall risk score from 0-100 and a one-line verdict. Use clear "
+                "Markdown headings.\n\n===== CONTRACT BODY =====\n" + text
+            )
+        else:
+            prompt = (
+                "你是一名严谨的合同审查律师。请审阅下面这份合同文本，"
+                "识别高风险条款，按严重程度（HIGH/MEDIUM/LOW）列出每一条，"
+                "用大白话解释风险点，并给出修改建议。最后给出一个 0-100 的风险评分和总体结论。"
+                "请使用 Markdown 结构清晰输出。\n\n===== 合同正文 =====\n" + text
+            )
         launched = CLIENT.launch(prompt)
         if launched.get("ok"):
             self._send(200, json.dumps({
@@ -134,7 +146,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         # Path C: graceful offline fallback (API unavailable)
-        result = fallback.scan(text)
+        result = fallback.scan(text, lang)
         self._send(200, json.dumps({
             "ok": True, "mode": "offline", "offline_reason": launched.get("error"),
             "result": result,
