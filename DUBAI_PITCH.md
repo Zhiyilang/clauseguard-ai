@@ -3,7 +3,7 @@
 **Category: Best Societal AI Agent** · Prepared October 2026 · All-English entry
 
 > Prize: AED 550,000 per category winner + AED 1,000,000 "AI Agent of the Year".
-> Total pool > AED 2.5M (~US$680k). Registration closes December 2026.
+> Total pool > AED 2.5M (~US$680k). Registration closes January 2027 (official timeline + FAQ; press reported December — official page wins).
 > Grand final (first week of May 2027) requires a **fully working agent demonstrated live** — not an MVP.
 
 ---

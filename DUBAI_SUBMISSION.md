@@ -12,7 +12,7 @@
 | Prize pool | > AED 2.5M (~US$680k): **AED 550,000 per category winner**; one winner also named **AI Agent of the Year (+AED 1,000,000)** |
 | Categories | Best Societal / Best Personal / Best Business / **Best Youth (under 21 at registration — NOT eligible: applicant is 21)** |
 | Eligibility | Open worldwide, individuals or teams up to 6, no minimum age; **fully commercialised solutions NOT eligible** |
-| Registration | Open now; **closes December 2026** — dubaichamberdigital.com/en/create-ai-agents |
+| Registration | Open now; **closes January 2027 (official timeline + FAQ; press reported December — official page wins)** — dubaichamberdigital.com/en/create-ai-agents |
 | Required deliverables | **AI-agent prototype + pitch deck + demo video**, all in English |
 | Multiple entries | Allowed — you may file more than one application without re-registering |
 | Support | 3 intro workshops (Oct–Nov); Digital Academy opens November (courses + mentorship) |
@@ -35,7 +35,7 @@ ClauseGuard maps directly: enterprise-grade contract review for people priced ou
 | Public repo + open-source licence | ✅ MIT, zero-dependency, 36/36 assertions, 3-version CI | README.md (English version needed for repo front page — see action A4) |
 
 ## 4. Applicant action list (in order)
-- [ ] **A1. Register** at dubaichamberdigital.com/en/create-ai-agents (before December 2026; earlier = access to workshops/Academy materials). Confirm whether the submission window has opened on the platform — registering tells you when submissions open.
+- [ ] **A1. Register** at dubaichamberdigital.com/en/create-ai-agents (before January 2027 (earlier registration = workshop/Academy access); earlier = access to workshops/Academy materials). Confirm whether the submission window has opened on the platform — registering tells you when submissions open.
 - [ ] **A2. Redeploy** the ClauseGuard instance (Render) so the live URL is healthy at submission time; verify the English toggle works on the deployed build.
 - [ ] **A3. Record the demo video** per `DUBAI_DEMO_SCRIPT.md` (3 min, English, unlisted YouTube).
 - [ ] **A4. Convert `DUBAI_PITCH.md` to a slide deck** (12 slides, English) — or ask the agent to produce an HTML/PPTX version.
