@@ -41,14 +41,13 @@
 | 方案质量 25% | 36/36 断言（双语一致性、评分单调性、引用可解析）；CI 绿；零依赖 |
 | 已证实影响 25% | **必须真部署**：Render/任意云活链接 + demo 视频 + 部署后 /healthz 探针记录 |
 
-## 提交清单（用户动作已标注）
+## 提交清单
 
+- [x] **参赛专用仓已建并全绿**：`github.com/Zhiyilang/clauseguard-justice`（12 文件单提交，README=Track 07 问题陈述+四维评分映射，MIT LICENSE，36 断言双 locale 全绿，CI 首跑 success）
 - [ ] 用户注册 https://agentfoundry.me 建项目（免费，送 1M tokens）
-- [ ] AI 建参赛专用仓 `clauseguard-justice`（**不要转现有主力仓**——CFI 要求开源进其 org；专用仓基于 ClauseGuard 派生，MIT）
-- [ ] README 问题陈述按上节写入，附评分四维证据
 - [ ] 2–3 分钟 demo（现有 `clauseguard_demo.mp4` 30s 可复用/扩写；或录 live link 走查）
-- [ ] 部署到云（Render 免费档，沿用 app.py + PORT + /healthz 模式）
-- [ ] 11-15 前：GitHub issue 表单提交（模板 submission.yml 在 karlmehta/code-for-a-billion 仓）
+- [ ] 部署到云（Render 免费档，沿用 app.py + PORT + /healthz 模式；**注意 sites 槽位现被 MatchLens 占用至 10-21，之后转给本仓产 live link**）
+- [ ] 11-15 前：GitHub issue 表单提交（模板 submission.yml 在 karlmehta/code-for-a-billion 仓）+ 按规则把 MIT 副本推进 CFI GitHub org
 
 ## 已知风险 / 待验证项
 
