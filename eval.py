@@ -168,5 +168,6 @@ srv.shutdown()
 # --------------------------------------------------------------------------
 print("=" * 46)
 print("结果：%d 通过 / %d 失败" % (_passed, _failed))
+print("RESULT: %d passed, %d failed" % (_passed, _failed))
 print("=" * 46)
 sys.exit(1 if _failed else 0)
